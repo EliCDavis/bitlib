@@ -50,7 +50,7 @@ func TestReadWrite(t *testing.T) {
 	writer.Float32Array(f32Arr)
 
 	// Read
-	writer := bitlib.NewWriter(&buf, binary.LittleEndian)
+	reader := bitlib.NewReader(bytes.NewBuffer(buf.Bytes()), binary.LittleEndian)
 	log.Println(reader.Float64())
 	log.Println(reader.Float32())
 	log.Println(reader.Int64())
