@@ -1,4 +1,5 @@
 # Bitlib
+![Coverage](https://img.shields.io/badge/Coverage-82.6%25-brightgreen)
 
 Utilities for reading and writing binary data that for some reason I keep re-writing over and over.
 
