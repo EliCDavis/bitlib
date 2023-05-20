@@ -1,0 +1,181 @@
+package bitlib
+
+import (
+	"encoding/binary"
+	"io"
+	"math"
+)
+
+type Writer struct {
+	in     io.Writer
+	err    error
+	endian binary.ByteOrder
+}
+
+func NewWriter(in io.Writer, byteOrder binary.ByteOrder) *Writer {
+	return &Writer{
+		in:     in,
+		endian: byteOrder,
+	}
+}
+
+func (w Writer) Error() error {
+	return w.err
+}
+
+func (w *Writer) Float64(f float64) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bits := math.Float64bits(f)
+	bytes := make([]byte, 8)
+	w.endian.PutUint64(bytes, bits)
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Float32(f float32) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bits := math.Float32bits(f)
+	bytes := make([]byte, 4)
+	w.endian.PutUint32(bytes, bits)
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Int64(i int64) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 8)
+	w.endian.PutUint64(bytes, uint64(i))
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Int32(i int32) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 4)
+	w.endian.PutUint32(bytes, uint32(i))
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Int16(i int16) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 2)
+	w.endian.PutUint16(bytes, uint16(i))
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) UInt64(i uint64) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 8)
+	w.endian.PutUint64(bytes, i)
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) UInt32(i uint32) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 4)
+	w.endian.PutUint32(bytes, i)
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) UInt16(i uint16) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 2)
+	w.endian.PutUint16(bytes, i)
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Byte(i byte) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	_, w.err = w.in.Write([]byte{i})
+	return w.err
+}
+
+func (w *Writer) UVarInt(i uint64) error {
+	if w.err != nil {
+		return w.err
+	}
+	bytes := make([]byte, 8)
+	c := binary.PutUvarint(bytes, i)
+	_, w.err = w.in.Write(bytes[:c])
+	return w.err
+}
+
+func (w *Writer) VarInt(i int64) error {
+	if w.err != nil {
+		return w.err
+	}
+	bytes := make([]byte, 8)
+	c := binary.PutVarint(bytes, i)
+	_, w.err = w.in.Write(bytes[:c])
+	return w.err
+}
+
+func (w *Writer) ByteArray(b []byte) error {
+	if w.err != nil {
+		return w.err
+	}
+	_, w.err = w.in.Write(b)
+	return w.err
+}
+
+func (w *Writer) Float64Array(fArr []float64) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 8*len(fArr))
+	for i := 0; i < len(fArr); i++ {
+		bits := math.Float64bits(fArr[i])
+		w.endian.PutUint64(bytes[8*i:], bits)
+	}
+
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Float32Array(fArr []float32) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 4*len(fArr))
+	for i := 0; i < len(fArr); i++ {
+		bits := math.Float32bits(fArr[i])
+		w.endian.PutUint32(bytes[4*i:], bits)
+	}
+
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
