@@ -1,5 +1,7 @@
 # Bitlib
+
 ![Coverage](https://img.shields.io/badge/Coverage-82.6%25-brightgreen)
+[![Go Report Card](https://goreportcard.com/badge/github.com/EliCDavis/bitlib)](https://goreportcard.com/report/github.com/EliCDavis/bitlib)
 
 Utilities for reading and writing binary data that for some reason I keep re-writing over and over.
 
@@ -64,7 +66,7 @@ func TestReadWrite(t *testing.T) {
 	log.Println(reader.UVarInt())
 	log.Println(reader.Byte())
 	log.Println(reader.ByteArray(len(bArr)))
-	log.Println(reader.Float64Array(len(bArr)))
-	log.Println(reader.Float32Array(len(bArr)))
+	log.Println(reader.Float64Array(len(f64Arr)))
+	log.Println(reader.Float32Array(len(f32Arr)))
 }
 ```

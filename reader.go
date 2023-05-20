@@ -97,6 +97,40 @@ func (r *Reader) Int32() int32 {
 	return int32(i)
 }
 
+func (r *Reader) Int32Array(len int) []int32 {
+	if r.err != nil || len == 0 {
+		return nil
+	}
+	data := make([]byte, 4*len)
+	_, r.err = io.ReadFull(r.in, data)
+	if r.err != nil {
+		return nil
+	}
+
+	arr := make([]int32, len)
+	for i := 0; i < len; i++ {
+		arr[i] = int32(r.endian.Uint32(data[i*4:]))
+	}
+	return arr
+}
+
+func (r *Reader) Uint32Array(len int) []uint32 {
+	if r.err != nil || len == 0 {
+		return nil
+	}
+	data := make([]byte, 4*len)
+	_, r.err = io.ReadFull(r.in, data)
+	if r.err != nil {
+		return nil
+	}
+
+	arr := make([]uint32, len)
+	for i := 0; i < len; i++ {
+		arr[i] = r.endian.Uint32(data[i*4:])
+	}
+	return arr
+}
+
 func (r *Reader) Int16() int16 {
 	if r.err != nil {
 		return 0

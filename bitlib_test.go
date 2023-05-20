@@ -23,6 +23,8 @@ func TestReadWrite(t *testing.T) {
 	var bArr []byte = []byte{1, 2, 3, 4, 5}
 	var f64Arr []float64 = []float64{1, 2, 3, 4, 5}
 	var f32Arr []float32 = []float32{1, 2, 3, 4, 5}
+	var i32Arr []int32 = []int32{-1, -2, -3, -4, -5}
+	var u32Arr []uint32 = []uint32{1, 2, 3, 4, 5}
 
 	// Write
 	writer := bitlib.NewWriter(&buf, binary.LittleEndian)
@@ -40,6 +42,8 @@ func TestReadWrite(t *testing.T) {
 	writer.ByteArray(bArr)
 	writer.Float64Array(f64Arr)
 	writer.Float32Array(f32Arr)
+	writer.Int32Array(i32Arr)
+	writer.Uint32Array(u32Arr)
 
 	// Read
 	reader := bitlib.NewReader(bytes.NewBuffer(buf.Bytes()), binary.LittleEndian)
@@ -55,8 +59,10 @@ func TestReadWrite(t *testing.T) {
 	readuvar64Val := reader.UVarInt()
 	readbVal := reader.Byte()
 	readbArrVal := reader.ByteArray(len(bArr))
-	readf64ArrVal := reader.Float64Array(len(bArr))
-	readf32ArrVal := reader.Float32Array(len(bArr))
+	readf64ArrVal := reader.Float64Array(len(f64Arr))
+	readf32ArrVal := reader.Float32Array(len(f32Arr))
+	readi32ArrVal := reader.Int32Array(len(i32Arr))
+	readu32ArrVal := reader.Uint32Array(len(u32Arr))
 
 	assert.NoError(t, writer.Error())
 	assert.NoError(t, reader.Error())
@@ -74,4 +80,6 @@ func TestReadWrite(t *testing.T) {
 	assert.Equal(t, bArr, readbArrVal)
 	assert.Equal(t, f64Arr, readf64ArrVal)
 	assert.Equal(t, f32Arr, readf32ArrVal)
+	assert.Equal(t, i32Arr, readi32ArrVal)
+	assert.Equal(t, u32Arr, readu32ArrVal)
 }

@@ -179,3 +179,31 @@ func (w *Writer) Float32Array(fArr []float32) error {
 	_, w.err = w.in.Write(bytes)
 	return w.err
 }
+
+func (w *Writer) Int32Array(iArr []int32) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 4*len(iArr))
+	for i := 0; i < len(iArr); i++ {
+		w.endian.PutUint32(bytes[4*i:], uint32(iArr[i]))
+	}
+
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
+
+func (w *Writer) Uint32Array(iArr []uint32) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	bytes := make([]byte, 4*len(iArr))
+	for i := 0; i < len(iArr); i++ {
+		w.endian.PutUint32(bytes[4*i:], iArr[i])
+	}
+
+	_, w.err = w.in.Write(bytes)
+	return w.err
+}
