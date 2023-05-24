@@ -206,3 +206,14 @@ func (r *Reader) VarInt() (i int64) {
 func (r *Reader) ReadByte() (byte, error) {
 	return r.Byte(), r.err
 }
+
+// Implementing the io.Reader interface
+func (r *Reader) Read(p []byte) (n int, err error) {
+	if r.err != nil {
+		return 0, r.err
+	}
+
+	n, err = io.ReadFull(r.in, p)
+	r.err = err
+	return
+}
