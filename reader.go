@@ -202,6 +202,26 @@ func (r *Reader) VarInt() (i int64) {
 	return
 }
 
+// Reads data and sets the value a passed into this function.
+// Function must recieve a pointer to the value to be set.
+func (r *Reader) Any(a any) error {
+	if r.err != nil {
+		return r.err
+	}
+
+	r.err = binary.Read(r, r.endian, a)
+	return r.err
+}
+
+func (r *Reader) String(len int) string {
+	if r.err != nil || len == 0 {
+		return ""
+	}
+	data := make([]byte, len)
+	_, r.err = io.ReadFull(r.in, data)
+	return string(data)
+}
+
 // Implementing the io.ByteReader interface
 func (r *Reader) ReadByte() (byte, error) {
 	return r.Byte(), r.err
@@ -216,4 +236,14 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 	n, err = io.ReadFull(r.in, p)
 	r.err = err
 	return
+}
+
+func Read[T any](reader *Reader) (T, error) {
+	var val T
+	return val, binary.Read(reader, reader.endian, &val)
+}
+
+func ReadArray[T any](reader *Reader, length int) ([]T, error) {
+	data := make([]T, length)
+	return data, binary.Read(reader, reader.endian, data)
 }

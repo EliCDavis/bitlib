@@ -5,6 +5,17 @@
 
 Utilities for reading and writing binary data that for some reason I keep re-writing over and over.
 
+Reader Implements:
+
+* io.Reader
+* io.ByteReader
+
+Writer Implements:
+
+* io.Writer
+* io.ByteWriter
+* io.StringWriter
+
 ## Example
 
 ```go

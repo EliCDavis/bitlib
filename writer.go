@@ -208,6 +208,15 @@ func (w *Writer) Uint32Array(iArr []uint32) error {
 	return w.err
 }
 
+func (w *Writer) Any(a any) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	w.err = binary.Write(w, w.endian, a)
+	return w.err
+}
+
 // Implementing the io.Writer interface
 func (w *Writer) Write(p []byte) (n int, err error) {
 	if w.err != nil {
@@ -217,4 +226,32 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 	n, err = w.out.Write(p)
 	w.err = err
 	return n, err
+}
+
+// Implementing io.ByteWriter
+func (w *Writer) WriteByte(c byte) error {
+	if w.err != nil {
+		return w.err
+	}
+
+	_, w.err = w.out.Write([]byte{c})
+	return w.err
+}
+
+// Implementing io.StringWriter
+func (w *Writer) WriteString(s string) (int, error) {
+	if w.err != nil {
+		return 0, w.err
+	}
+	var n int
+	n, w.err = w.out.Write([]byte(s))
+	return n, w.err
+}
+
+func WriteArray[T any](writer *Writer, data []T) error {
+	return binary.Write(writer, writer.endian, data)
+}
+
+func Write[T any](writer *Writer, data T) error {
+	return binary.Write(writer, writer.endian, data)
 }
