@@ -1,6 +1,6 @@
 # Bitlib
 
-![Coverage](https://img.shields.io/badge/Coverage-82.4%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-83.6%25-brightgreen)
 [![Go Report Card](https://goreportcard.com/badge/github.com/EliCDavis/bitlib)](https://goreportcard.com/report/github.com/EliCDavis/bitlib)
 
 Utilities for reading and writing binary data that for some reason I keep re-writing over and over.
