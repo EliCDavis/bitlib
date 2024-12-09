@@ -10,12 +10,14 @@ type Writer struct {
 	out    io.Writer
 	err    error
 	endian binary.ByteOrder
+	buf    []byte
 }
 
 func NewWriter(in io.Writer, byteOrder binary.ByteOrder) *Writer {
 	return &Writer{
 		out:    in,
 		endian: byteOrder,
+		buf:    make([]byte, 8),
 	}
 }
 
@@ -29,9 +31,8 @@ func (w *Writer) Float64(f float64) error {
 	}
 
 	bits := math.Float64bits(f)
-	bytes := make([]byte, 8)
-	w.endian.PutUint64(bytes, bits)
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint64(w.buf, bits)
+	_, w.err = w.out.Write(w.buf)
 	return w.err
 }
 
@@ -41,9 +42,8 @@ func (w *Writer) Float32(f float32) error {
 	}
 
 	bits := math.Float32bits(f)
-	bytes := make([]byte, 4)
-	w.endian.PutUint32(bytes, bits)
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint32(w.buf, bits)
+	_, w.err = w.out.Write(w.buf[:4])
 	return w.err
 }
 
@@ -52,9 +52,8 @@ func (w *Writer) Int64(i int64) error {
 		return w.err
 	}
 
-	bytes := make([]byte, 8)
-	w.endian.PutUint64(bytes, uint64(i))
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint64(w.buf, uint64(i))
+	_, w.err = w.out.Write(w.buf)
 	return w.err
 }
 
@@ -63,9 +62,8 @@ func (w *Writer) Int32(i int32) error {
 		return w.err
 	}
 
-	bytes := make([]byte, 4)
-	w.endian.PutUint32(bytes, uint32(i))
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint32(w.buf, uint32(i))
+	_, w.err = w.out.Write(w.buf[:4])
 	return w.err
 }
 
@@ -74,9 +72,8 @@ func (w *Writer) Int16(i int16) error {
 		return w.err
 	}
 
-	bytes := make([]byte, 2)
-	w.endian.PutUint16(bytes, uint16(i))
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint16(w.buf, uint16(i))
+	_, w.err = w.out.Write(w.buf[:2])
 	return w.err
 }
 
@@ -85,9 +82,8 @@ func (w *Writer) UInt64(i uint64) error {
 		return w.err
 	}
 
-	bytes := make([]byte, 8)
-	w.endian.PutUint64(bytes, i)
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint64(w.buf, i)
+	_, w.err = w.out.Write(w.buf)
 	return w.err
 }
 
@@ -96,9 +92,8 @@ func (w *Writer) UInt32(i uint32) error {
 		return w.err
 	}
 
-	bytes := make([]byte, 4)
-	w.endian.PutUint32(bytes, i)
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint32(w.buf, i)
+	_, w.err = w.out.Write(w.buf[:4])
 	return w.err
 }
 
@@ -107,9 +102,8 @@ func (w *Writer) UInt16(i uint16) error {
 		return w.err
 	}
 
-	bytes := make([]byte, 2)
-	w.endian.PutUint16(bytes, i)
-	_, w.err = w.out.Write(bytes)
+	w.endian.PutUint16(w.buf, i)
+	_, w.err = w.out.Write(w.buf[:2])
 	return w.err
 }
 
@@ -118,7 +112,8 @@ func (w *Writer) Byte(i byte) error {
 		return w.err
 	}
 
-	_, w.err = w.out.Write([]byte{i})
+	w.buf[0] = i
+	_, w.err = w.out.Write(w.buf[:1])
 	return w.err
 }
 
@@ -126,9 +121,8 @@ func (w *Writer) UVarInt(i uint64) error {
 	if w.err != nil {
 		return w.err
 	}
-	bytes := make([]byte, 8)
-	c := binary.PutUvarint(bytes, i)
-	_, w.err = w.out.Write(bytes[:c])
+	c := binary.PutUvarint(w.buf, i)
+	_, w.err = w.out.Write(w.buf[:c])
 	return w.err
 }
 
@@ -136,9 +130,8 @@ func (w *Writer) VarInt(i int64) error {
 	if w.err != nil {
 		return w.err
 	}
-	bytes := make([]byte, 8)
-	c := binary.PutVarint(bytes, i)
-	_, w.err = w.out.Write(bytes[:c])
+	c := binary.PutVarint(w.buf, i)
+	_, w.err = w.out.Write(w.buf[:c])
 	return w.err
 }
 

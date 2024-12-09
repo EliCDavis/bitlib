@@ -10,12 +10,14 @@ type Reader struct {
 	in     io.Reader
 	err    error
 	endian binary.ByteOrder
+	buf    []byte
 }
 
 func NewReader(in io.Reader, byteOrder binary.ByteOrder) *Reader {
 	return &Reader{
 		in:     in,
 		endian: byteOrder,
+		buf:    make([]byte, 8),
 	}
 }
 
@@ -27,9 +29,8 @@ func (r *Reader) Float64() float64 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 8)
-	_, r.err = io.ReadFull(r.in, data)
-	return math.Float64frombits(r.endian.Uint64(data))
+	_, r.err = io.ReadFull(r.in, r.buf)
+	return math.Float64frombits(r.endian.Uint64(r.buf))
 }
 
 func (r *Reader) Float64Array(len int) []float64 {
@@ -55,9 +56,8 @@ func (r *Reader) Float32() float32 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 4)
-	_, r.err = io.ReadFull(r.in, data)
-	return math.Float32frombits(r.endian.Uint32(data))
+	_, r.err = io.ReadFull(r.in, r.buf[:4])
+	return math.Float32frombits(r.endian.Uint32(r.buf))
 }
 
 func (r *Reader) Float32Array(len int) []float32 {
@@ -81,9 +81,8 @@ func (r *Reader) Int64() int64 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 8)
-	_, r.err = io.ReadFull(r.in, data)
-	i := r.endian.Uint64(data)
+	_, r.err = io.ReadFull(r.in, r.buf)
+	i := r.endian.Uint64(r.buf)
 	return int64(i)
 }
 
@@ -91,9 +90,8 @@ func (r *Reader) Int32() int32 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 4)
-	_, r.err = io.ReadFull(r.in, data)
-	i := r.endian.Uint32(data)
+	_, r.err = io.ReadFull(r.in, r.buf[:4])
+	i := r.endian.Uint32(r.buf)
 	return int32(i)
 }
 
@@ -135,9 +133,8 @@ func (r *Reader) Int16() int16 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 2)
-	_, r.err = io.ReadFull(r.in, data)
-	i := r.endian.Uint16(data)
+	_, r.err = io.ReadFull(r.in, r.buf[:2])
+	i := r.endian.Uint16(r.buf)
 	return int16(i)
 }
 
@@ -145,36 +142,32 @@ func (r *Reader) UInt64() uint64 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 8)
-	_, r.err = io.ReadFull(r.in, data)
-	return r.endian.Uint64(data)
+	_, r.err = io.ReadFull(r.in, r.buf)
+	return r.endian.Uint64(r.buf)
 }
 
 func (r *Reader) UInt32() uint32 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 4)
-	_, r.err = io.ReadFull(r.in, data)
-	return r.endian.Uint32(data)
+	_, r.err = io.ReadFull(r.in, r.buf[:4])
+	return r.endian.Uint32(r.buf)
 }
 
 func (r *Reader) UInt16() uint16 {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 2)
-	_, r.err = io.ReadFull(r.in, data)
-	return r.endian.Uint16(data)
+	_, r.err = io.ReadFull(r.in, r.buf[:2])
+	return r.endian.Uint16(r.buf)
 }
 
 func (r *Reader) Byte() byte {
 	if r.err != nil {
 		return 0
 	}
-	data := make([]byte, 1)
-	_, r.err = io.ReadFull(r.in, data)
-	return data[0]
+	_, r.err = io.ReadFull(r.in, r.buf[:1])
+	return r.buf[0]
 }
 
 func (r *Reader) ByteArray(len int) []byte {
